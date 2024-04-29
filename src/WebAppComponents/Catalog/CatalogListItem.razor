@@ -1,4 +1,6 @@
 ﻿@using eShop.WebAppComponents.Item
+@using System
+
 @inject IProductImageUrlProvider ProductImages
 
 <div class="catalog-item">
@@ -9,6 +11,7 @@
         <span class='catalog-product-content'>
             <span class='name'>@Item.Name</span>
             <span class='price'>$@Item.Price.ToString("0.00")</span>
+            <span class='rating'>@Rating</span>
         </span>
     </a>
 </div>
@@ -19,4 +22,29 @@
 
     [Parameter]
     public bool IsLoggedIn { get; set; }
+
+    public string Rating = "☆☆★";
+
+    protected override void OnInitialized()
+    {
+        Random random = new Random();
+        int r = random.Next(0, 4);
+
+        string fullStar = "★";
+        string emptyStar = "☆";
+
+        string result;
+        if(r == 0) {
+            result = emptyStar + emptyStar + emptyStar;
+        } else if (r == 1) {
+            result = emptyStar + emptyStar + fullStar;
+        } else if (r == 2) {
+            result = emptyStar + fullStar + fullStar;
+        } else if (r == 3) {
+            result = fullStar + fullStar + fullStar;
+        } else {
+            result = emptyStar + emptyStar + emptyStar;
+        }
+        Rating = result;
+    }
 }
