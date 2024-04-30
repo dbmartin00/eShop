@@ -10,7 +10,7 @@
         </span>
         <span class='catalog-product-content'>
             <span class='name'>@Item.Name</span>
-            <span class='price'>$@Item.Price.ToString("0.00")</span>
+            <span class='price'>@discount(@Item.Price).ToString("0.00") <s>@Item.Price.ToString("0.00")</s></span>
             <span class='rating'>@Rating</span>
         </span>
     </a>
@@ -23,27 +23,27 @@
     [Parameter]
     public bool IsLoggedIn { get; set; }
 
+    public decimal discount(decimal price)
+    {
+        return price - (price * 0.20m);
+    }
+
     public string Rating = "☆☆★";
 
     protected override void OnInitialized()
     {
         Random random = new Random();
-        int r = random.Next(0, 4);
+        int r = random.Next(0, 6);
 
         string fullStar = "★";
         string emptyStar = "☆";
 
-        string result;
-        if(r == 0) {
-            result = emptyStar + emptyStar + emptyStar;
-        } else if (r == 1) {
-            result = emptyStar + emptyStar + fullStar;
-        } else if (r == 2) {
-            result = emptyStar + fullStar + fullStar;
-        } else if (r == 3) {
-            result = fullStar + fullStar + fullStar;
-        } else {
-            result = emptyStar + emptyStar + emptyStar;
+        string result = "";
+        for(int j = 0; j < 5 - r; j++) {
+            result = emptyStar + result;
+        }
+        for(int i = 0; i < r; i++) {
+            result = fullStar + result;
         }
         Rating = result;
     }
