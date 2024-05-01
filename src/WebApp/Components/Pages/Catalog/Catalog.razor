@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using Microsoft.Extensions.Logging
-@inject ILogger<CatalogListItem> Logger
 
+@inject ILogger<CatalogListItem> Logger
 @inject NavigationManager Nav
 @inject CatalogService CatalogService
 @attribute [StreamRendering]
@@ -38,7 +38,8 @@
 </div>
 
 @code {
-    const int PageSize = 3;
+
+    static int PageSize = 3;
 
     [SupplyParameterFromQuery]
     public int? Page { get; set; }
@@ -58,6 +59,20 @@
     {
         string? id = await CatalogService.InitUserId();
         Logger.LogInformation("DBM Catalog.razor init id: " + id);
+
+        string? pageSizeEnabled = await CatalogService.CatalogPageSizeEnabledAsync();
+        if(pageSizeEnabled != null) 
+        {
+            bool enabled = string.Equals(pageSizeEnabled, "On");
+            if(enabled)
+            {
+                PageSize = 3;
+            }
+            else
+            {
+                PageSize = 9;
+            }
+        }        
 
         catalogResult = await CatalogService.GetCatalogItems(
             Page.GetValueOrDefault(1) - 1,

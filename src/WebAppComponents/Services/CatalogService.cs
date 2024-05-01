@@ -43,6 +43,15 @@ public class CatalogService(HttpClient httpClient)
         return await response.Content.ReadAsStringAsync();
     }
 
+    public async Task<string?> CatalogPageSizeEnabledAsync()
+    {
+        var uri = $"{remoteServiceBaseUrl}ff/page_size";
+        var response = await httpClient.GetAsync(uri);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
     public Task<CatalogItem?> GetCatalogItem(int id)
     {
         var uri = $"{remoteServiceBaseUrl}items/{id}";
