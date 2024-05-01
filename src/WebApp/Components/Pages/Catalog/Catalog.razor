@@ -1,4 +1,7 @@
 ﻿@page "/"
+@using Microsoft.Extensions.Logging
+@inject ILogger<CatalogListItem> Logger
+
 @inject NavigationManager Nav
 @inject CatalogService CatalogService
 @attribute [StreamRendering]
@@ -53,6 +56,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        string? id = await CatalogService.InitUserId();
+        Logger.LogInformation("DBM Catalog.razor init id: " + id);
+
         catalogResult = await CatalogService.GetCatalogItems(
             Page.GetValueOrDefault(1) - 1,
             PageSize,

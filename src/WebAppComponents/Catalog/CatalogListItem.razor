@@ -1,7 +1,13 @@
 ﻿@using eShop.WebAppComponents.Item
 @using System
+@using Microsoft.JSInterop
+
+@using Microsoft.Extensions.Logging
+@inject ILogger<CatalogListItem> Logger
 
 @inject IProductImageUrlProvider ProductImages
+@inject CatalogService CatalogService
+@* @inject IJSRuntime JSRuntime *@
 
 <div class="catalog-item">
     <a class="catalog-product" href="@ItemHelper.Url(Item)" data-enhance-nav="false">
@@ -11,12 +17,17 @@
         <span class='catalog-product-content'>
             <span class='name'>@Item.Name</span>
             <span class='price'>@discount(@Item.Price).ToString("0.00") <s>@Item.Price.ToString("0.00")</s></span>
-            <span class='rating'>@Rating</span>
+            @if(@ShowRatingEnabled()) { <span class='rating'>@Rating</span> }
         </span>
     </a>
 </div>
 
 @code {
+    @* public async Task LogToConsole(string message)
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", message);
+    } *@
+
     [Parameter, EditorRequired]
     public required CatalogItem Item { get; set; }
 
@@ -30,7 +41,14 @@
 
     public string Rating = "☆☆★";
 
-    protected override void OnInitialized()
+    public bool showRatingEnabled = false;
+
+    public bool ShowRatingEnabled()
+    {
+        return showRatingEnabled;
+    }
+
+    protected override async Task OnInitializedAsync()
     {
         Random random = new Random();
         int r = random.Next(0, 6);
@@ -46,5 +64,13 @@
             result = fullStar + result;
         }
         Rating = result;
+
+        string? showRating = await CatalogService.DisplayRatingAsync();
+        @* await LogToConsole("raw showRating: " + showRating); *@
+        Logger.LogInformation("DBM raw showRating: " + showRating);
+
+        if(showRating != null) {
+            showRatingEnabled = string.Equals(showRating, "On");
+        }
     }
 }

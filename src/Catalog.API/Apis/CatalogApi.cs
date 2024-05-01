@@ -1,5 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Pgvector.EntityFrameworkCore;
+using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.FeatureManagement;
+using Microsoft.FeatureManagement.Telemetry.ApplicationInsights;
+using Microsoft.FeatureManagement.Telemetry.ApplicationInsights.AspNetCore;
+using Microsoft.Extensions.Logging;
 
 namespace eShop.Catalog.API;
 
@@ -29,6 +36,12 @@ public static class CatalogApi
         api.MapPut("/items", UpdateItem);
         api.MapPost("/items", CreateItem);
         api.MapDelete("/items/{id:int}", DeleteItemById);
+
+        // AppConfig feature flag evaluations
+        api.MapGet("/ff/display_rating", GetDisplayRatingAsync);
+        api.MapGet("/ff/initializeId", OnInitializeId);        
+        // api.MapGet("/ff/min_page_size", GetMinPageSizeAsync);
+        // api.MapGet("/ff/show_discount", GetShowDiscountAsync);
 
         return app;
     }
@@ -294,6 +307,36 @@ public static class CatalogApi
         services.Context.CatalogItems.Remove(item);
         await services.Context.SaveChangesAsync();
         return TypedResults.NoContent();
+    }
+
+    // private static string GetShowRating() {
+    //     return "On";
+    // }
+
+    private static async Task<string> GetDisplayRatingAsync(IVariantFeatureManagerSnapshot snapshot) {
+       return await GetFeatureVariantAsync(snapshot, "display_rating");
+    }
+
+    private static string OnInitializeId(TelemetryClient telemetryClient) {
+        string name = Guid.NewGuid().ToString();
+        telemetryClient.Context.User.AuthenticatedUserId = name;
+        return name;
+    }
+
+
+    // private static async Task<string> GetMinPageSizeAsync(IVariantFeatureManagerSnapshot snapshot) {
+    //     return await GetFeatureVariantAsync(snapshot, "min_page_size");
+    // }
+
+    // private static async Task<string> GetShowDiscountAsync(IVariantFeatureManagerSnapshot snapshot) {
+    //     return await GetFeatureVariantAsync(snapshot, "show_discount");
+    // }
+
+    private static async Task<string> GetFeatureVariantAsync(IVariantFeatureManagerSnapshot snapshot, string flag_name)
+    {
+        CancellationToken cancellationToken = new CancellationToken();
+        Variant personVariant = await snapshot.GetVariantAsync(flag_name, cancellationToken);
+        return personVariant.Configuration.Get<string>() ?? "control";
     }
 
     private static string GetImageMimeTypeFromImageFileExtension(string extension) => extension switch
