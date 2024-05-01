@@ -39,7 +39,8 @@ public static class CatalogApi
 
         // AppConfig feature flag evaluations
         api.MapGet("/ff/display_rating", GetDisplayRatingAsync);
-        api.MapGet("/ff/initializeId", OnInitializeId);        
+        api.MapGet("/ff/initializeId", OnInitializeId);  
+        api.MapGet("/ff/display_discount", GetDisplayDiscountAsync);      
         // api.MapGet("/ff/min_page_size", GetMinPageSizeAsync);
         // api.MapGet("/ff/show_discount", GetShowDiscountAsync);
 
@@ -315,6 +316,10 @@ public static class CatalogApi
 
     private static async Task<string> GetDisplayRatingAsync(IVariantFeatureManagerSnapshot snapshot) {
        return await GetFeatureVariantAsync(snapshot, "display_rating");
+    }
+    // 
+        private static async Task<string> GetDisplayDiscountAsync(IVariantFeatureManagerSnapshot snapshot) {
+       return await GetFeatureVariantAsync(snapshot, "display_discount");
     }
 
     private static string OnInitializeId(TelemetryClient telemetryClient) {

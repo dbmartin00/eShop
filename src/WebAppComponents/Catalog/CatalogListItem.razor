@@ -16,7 +16,16 @@
         </span>
         <span class='catalog-product-content'>
             <span class='name'>@Item.Name</span>
-            <span class='price'>@discount(@Item.Price).ToString("0.00") <s>@Item.Price.ToString("0.00")</s></span>
+            <span class='price'>
+                @if(@ShowDiscountEnabled()) 
+                {
+                    @discount(@Item.Price).ToString("$0.00") <s>@Item.Price.ToString("$0.00")</s>
+                } 
+                else 
+                {
+                    @Item.Price.ToString("$0.00")
+                }
+            </span>
             @if(@ShowRatingEnabled()) { <span class='rating'>@Rating</span> }
         </span>
     </a>
@@ -37,6 +46,13 @@
     public decimal discount(decimal price)
     {
         return price - (price * 0.20m);
+    }
+
+    public bool showDiscountEnabled = false;
+
+    public bool ShowDiscountEnabled()
+    {
+        return showDiscountEnabled;
     }
 
     public string Rating = "☆☆★";
@@ -71,6 +87,13 @@
 
         if(showRating != null) {
             showRatingEnabled = string.Equals(showRating, "On");
+        }
+
+        string? showDiscount = await CatalogService.DisplayDiscountAsync();
+        Logger.LogInformation("DBM raw showDiscount: " + showDiscount);
+
+        if(showDiscount != null) {
+            showDiscountEnabled = string.Equals(showDiscount, "On");
         }
     }
 }

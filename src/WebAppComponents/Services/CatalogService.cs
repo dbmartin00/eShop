@@ -33,6 +33,15 @@ public class CatalogService(HttpClient httpClient)
 
         return await response.Content.ReadAsStringAsync();
     }
+    
+   public async Task<string?> DisplayDiscountAsync()
+    {
+        var uri = $"{remoteServiceBaseUrl}ff/display_discount";
+        var response = await httpClient.GetAsync(uri);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadAsStringAsync();
+    }
 
     public Task<CatalogItem?> GetCatalogItem(int id)
     {
