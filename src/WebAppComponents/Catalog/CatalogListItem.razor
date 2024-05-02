@@ -95,5 +95,7 @@
         if(showDiscount != null) {
             showDiscountEnabled = string.Equals(showDiscount, "On");
         }
+
+        string? trackResponse = await CatalogService.TrackEventAsync("izzy", "izzy_in_ms", 1001);
     }
 }

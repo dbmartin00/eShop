@@ -41,11 +41,27 @@ public static class CatalogApi
         api.MapGet("/ff/display_rating", GetDisplayRatingAsync);
         api.MapGet("/ff/initializeId", OnInitializeId);  
         api.MapGet("/ff/display_discount", GetDisplayDiscountAsync);
-        api.MapGet("/ff/page_size", GetPageSizeEnabledAsync);      
+        api.MapGet("/ff/page_size", GetPageSizeEnabledAsync);  
+        api.MapGet("/ff/track", OnTrack);
+
         // api.MapGet("/ff/min_page_size", GetMinPageSizeAsync);
         // api.MapGet("/ff/show_discount", GetShowDiscountAsync);
 
         return app;
+    }
+
+    private static string OnTrack(
+        string eventTypeId,
+        string valueString,
+        int value,
+        TelemetryClient telemetryClient)
+    {
+        Dictionary<string, string> props = new Dictionary<string, string>();
+        props.Add("TargetingId", telemetryClient.Context.User.AuthenticatedUserId);
+        props.Add(valueString, "" + value);
+        telemetryClient.TrackEvent(eventTypeId, props);
+
+        return "sent";
     }
 
     public static async Task<Results<Ok<PaginatedItems<CatalogItem>>, BadRequest<string>>> GetAllItems(

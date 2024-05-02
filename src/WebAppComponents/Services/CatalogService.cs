@@ -17,13 +17,13 @@ public class CatalogService(HttpClient httpClient)
         return await response.Content.ReadAsStringAsync();
     }
 
-    // public async Task<string> TrackEventAsync(string eventTypeId)
-    // {
-    //     var response = await httpClient.GetAsync("api/track?eventTypeId=" + eventTypeId);
-    //     response.EnsureSuccessStatusCode();
+    public async Task<string> TrackEventAsync(string eventTypeId, string valueString, int value)
+    {
+        var response = await httpClient.GetAsync(remoteServiceBaseUrl + "ff/track?eventTypeId=" + eventTypeId + "&valueString=" + valueString + "&value=" + value);
+        response.EnsureSuccessStatusCode();
 
-    //     return await response.Content.ReadAsStringAsync();      
-    // }
+        return await response.Content.ReadAsStringAsync();      
+    }
 
    public async Task<string?> DisplayRatingAsync()
     {
