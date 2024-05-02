@@ -32,6 +32,8 @@ public class BasketState(
 
     public async Task AddAsync(CatalogItem item)
     {
+        // DBM adding an item to the basket
+
         var items = (await FetchBasketItemsAsync()).Select(i => new BasketQuantity(i.ProductId, i.Quantity)).ToList();
         bool found = false;
         for (var i = 0; i < items.Count; i++)
@@ -75,8 +77,9 @@ public class BasketState(
         }
     }
 
-    public async Task CheckoutAsync(BasketCheckoutInfo checkoutInfo)
+    public async Task CheckoutAsync(BasketCheckoutInfo checkoutInfo, TelemetryClin)
     {
+        // DBM event for checkout happening; event for latency of checkout
         if (checkoutInfo.RequestId == default)
         {
             checkoutInfo.RequestId = Guid.NewGuid();

@@ -70,7 +70,7 @@ var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
 // set to true if you want to use OpenAI
-bool useOpenAI = false;
+bool useOpenAI = true;
 if (useOpenAI)
 {
     const string openAIName = "openai";
@@ -87,6 +87,14 @@ if (useOpenAI)
     if (builder.Configuration.GetConnectionString(openAIName) is not null)
     {
         openAI = builder.AddConnectionString(openAIName);
+
+        catalogApi
+            .WithReference(openAI)
+            .WithEnvironment("AI__OPENAI__EMBEDDINGNAME", textEmbeddingName);
+
+        webApp
+            .WithReference(openAI)
+            .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName); ;
     }
     else
     {
@@ -95,18 +103,26 @@ if (useOpenAI)
         //   "SubscriptionId": "<your subscription ID>"
         //   "Location": "<location>"
         // }
-        openAI = builder.AddAzureOpenAI(openAIName)
-            .AddDeployment(new AzureOpenAIDeployment(chatModelName, "gpt-35-turbo", "0613"))
+    
+        // Disabling because region East US is out of capacity
+        var chatAIResource = builder.AddAzureOpenAI(openAIName)
+            .AddDeployment(new AzureOpenAIDeployment(chatModelName, "gpt-35-turbo", "0613", "Standard", 10));
+        //var chatAIResource = builder.AddConnectionString(openAIName);
+    
+        var embeddingAIResource = builder.AddAzureOpenAI($"{openAIName}-embedding")
             .AddDeployment(new AzureOpenAIDeployment(textEmbeddingName, "text-embedding-ada-002", "2"));
+    
+        catalogApi
+            .WithReference(chatAIResource)
+            .WithReference(embeddingAIResource)
+            .WithEnvironment("AI__OPENAI__EMBEDDINGNAME", textEmbeddingName);
+    
+        webApp
+            .WithReference(chatAIResource)
+            .WithReference(embeddingAIResource)
+            .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName);
     }
 
-    catalogApi
-        .WithReference(openAI)
-        .WithEnvironment("AI__OPENAI__EMBEDDINGNAME", textEmbeddingName);
-
-    webApp
-        .WithReference(openAI)
-        .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName); ;
 }
 
 // Wire up the callback urls (self referencing)
