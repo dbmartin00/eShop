@@ -2,6 +2,7 @@
 @inject NavigationManager Nav
 @inject BasketState Basket
 @inject IProductImageUrlProvider ProductImages
+@inject CatalogService CatalogService
 @attribute [StreamRendering]
 @attribute [Authorize]
 
@@ -94,6 +95,8 @@
     protected override async Task OnInitializedAsync()
     {
         basketItems = await Basket.GetBasketItemsAsync();
+
+        await CatalogService.TrackEventAsync("cart.page", "cart.page", 1L);
     }
 
     private decimal? TotalPrice => basketItems?.Sum(i => i.Quantity * i.UnitPrice);

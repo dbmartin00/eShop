@@ -17,7 +17,7 @@ public class CatalogService(HttpClient httpClient)
         return await response.Content.ReadAsStringAsync();
     }
 
-aq    public async Task<string> TrackEventAsync(string eventTypeId, string valueString, long value)
+    public async Task<string> TrackEventAsync(string eventTypeId, string valueString, long value)
     {
         var response = await httpClient.GetAsync(remoteServiceBaseUrl + "ff/track?eventTypeId=" + eventTypeId + "&valueString=" + valueString + "&value=" + value);
         response.EnsureSuccessStatusCode();

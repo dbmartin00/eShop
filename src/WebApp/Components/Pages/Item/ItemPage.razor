@@ -4,6 +4,7 @@
 @inject BasketState BasketState
 @inject NavigationManager Nav
 @inject IProductImageUrlProvider ProductImages
+@inject CatalogService CatalogService
 
 @if (item is not null)
 {
@@ -85,6 +86,8 @@ else if (notFound)
             HttpContext!.Response.StatusCode = 404;
             notFound = true;
         }
+
+        await CatalogService.TrackEventAsync("item.page", "item.page", 1L);
     }
 
     private async Task AddToCartAsync()

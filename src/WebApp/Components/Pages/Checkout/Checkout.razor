@@ -3,6 +3,7 @@
 @using System.ComponentModel.DataAnnotations
 @inject BasketState Basket
 @inject NavigationManager Nav
+@inject CatalogService CatalogService
 @attribute [Authorize]
 
 <PageTitle>Checkout | Northern Mountains</PageTitle>
@@ -121,6 +122,11 @@
 
         editContext = new EditContext(Info!);
         extraMessages = new ValidationMessageStore(editContext);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CatalogService.TrackEventAsync("checkout", "checkout", 1L);
     }
 
     private void PopulateFormWithDefaultInfo()

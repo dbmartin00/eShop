@@ -77,7 +77,7 @@ public class BasketState(
         }
     }
 
-    public async Task CheckoutAsync(BasketCheckoutInfo checkoutInfo, TelemetryClin)
+    public async Task CheckoutAsync(BasketCheckoutInfo checkoutInfo)
     {
         // DBM event for checkout happening; event for latency of checkout
         if (checkoutInfo.RequestId == default)
