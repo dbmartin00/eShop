@@ -53,7 +53,7 @@ public static class CatalogApi
     private static string OnTrack(
         string eventTypeId,
         string valueString,
-        int value,
+        long value,
         TelemetryClient telemetryClient)
     {
         Dictionary<string, string> props = new Dictionary<string, string>();

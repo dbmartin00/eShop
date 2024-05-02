@@ -7,7 +7,6 @@
 
 @inject IProductImageUrlProvider ProductImages
 @inject CatalogService CatalogService
-@* @inject IJSRuntime JSRuntime *@
 
 <div class="catalog-item">
     <a class="catalog-product" href="@ItemHelper.Url(Item)" data-enhance-nav="false">
@@ -32,10 +31,6 @@
 </div>
 
 @code {
-    @* public async Task LogToConsole(string message)
-    {
-        await JSRuntime.InvokeVoidAsync("console.log", message);
-    } *@
 
     [Parameter, EditorRequired]
     public required CatalogItem Item { get; set; }
@@ -64,6 +59,21 @@
         return showRatingEnabled;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Logger.LogInformation("DBM OnAfterRenderAsync");
+        if(firstRender) 
+        {
+            Logger.LogInformation("DBM OnAfterRenderAsync firstRender true");
+            long end = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long duration = end - start;
+            Logger.LogInformation("DBM OnAfterRenderAsync latency " + duration + "ms");
+            string? trackResponse = await CatalogService.TrackEventAsync("catalog.latency.ms", "latency.ms", duration);
+        }
+    }
+
+    long start = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
     protected override async Task OnInitializedAsync()
     {
         Random random = new Random();
@@ -82,7 +92,6 @@
         Rating = result;
 
         string? showRating = await CatalogService.DisplayRatingAsync();
-        @* await LogToConsole("raw showRating: " + showRating); *@
         Logger.LogInformation("DBM raw showRating: " + showRating);
 
         if(showRating != null) {
@@ -96,6 +105,6 @@
             showDiscountEnabled = string.Equals(showDiscount, "On");
         }
 
-        string? trackResponse = await CatalogService.TrackEventAsync("izzy", "izzy_in_ms", 1001);
+        string? trackResponse = await CatalogService.TrackEventAsync("izzy", "izzy_in_ms", 1001L);
     }
 }

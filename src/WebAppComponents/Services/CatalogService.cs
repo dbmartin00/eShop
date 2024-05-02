@@ -17,7 +17,7 @@ public class CatalogService(HttpClient httpClient)
         return await response.Content.ReadAsStringAsync();
     }
 
-    public async Task<string> TrackEventAsync(string eventTypeId, string valueString, int value)
+    public async Task<string> TrackEventAsync(string eventTypeId, string valueString, long value)
     {
         var response = await httpClient.GetAsync(remoteServiceBaseUrl + "ff/track?eventTypeId=" + eventTypeId + "&valueString=" + valueString + "&value=" + value);
         response.EnsureSuccessStatusCode();
@@ -52,10 +52,15 @@ public class CatalogService(HttpClient httpClient)
         return await response.Content.ReadAsStringAsync();
     }
 
-    public Task<CatalogItem?> GetCatalogItem(int id)
+    public async Task<CatalogItem?> GetCatalogItem(int id)
     {
+        await TrackEventAsync("getCatalogItem_count", "count", 1L);
         var uri = $"{remoteServiceBaseUrl}items/{id}";
-        return httpClient.GetFromJsonAsync<CatalogItem>(uri);
+        long start = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var result = await httpClient.GetFromJsonAsync<CatalogItem>(uri);
+        long end = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        await TrackEventAsync("getCatalogItem_latency_in_ms", "latency_in_ms", end - start);
+        return result;
     }
 
     public async Task<CatalogResult> GetCatalogItems(int pageIndex, int pageSize, int? brand, int? type)
