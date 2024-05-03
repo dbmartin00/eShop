@@ -61,6 +61,13 @@ public class ChatState
         // Get and store the AI's response message
         try
         {
+            string? enabled = await _catalogService.MaxTokensAsync();
+            bool maxTokensEnabled = string.Equals(enabled, "On");
+            if(maxTokensEnabled)
+            {
+                _aiSettings.MaxTokens = 128; // override and abbreviate; DBM
+            }
+
             ChatMessageContent response = await _kernel.GetRequiredService<IChatCompletionService>().GetChatMessageContentAsync(Messages, _aiSettings, _kernel);
             if (!string.IsNullOrWhiteSpace(response.Content))
             {

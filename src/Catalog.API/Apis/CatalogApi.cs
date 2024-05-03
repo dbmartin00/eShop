@@ -41,6 +41,7 @@ public static class CatalogApi
         api.MapGet("/ff/display_rating", GetDisplayRatingAsync);
         api.MapGet("/ff/initializeId", OnInitializeId);  
         api.MapGet("/ff/display_discount", GetDisplayDiscountAsync);
+        api.MapGet("/ff/max_tokens", GetMaxTokensAsync);
         api.MapGet("/ff/page_size", GetPageSizeEnabledAsync);  
         api.MapGet("/ff/track", OnTrack);
 
@@ -330,6 +331,10 @@ public static class CatalogApi
     // private static string GetShowRating() {
     //     return "On";
     // }
+
+    private static async Task<string> GetMaxTokensAsync(IVariantFeatureManagerSnapshot snapshot) {
+       return await GetFeatureVariantAsync(snapshot, "max_tokens");
+    }
 
     private static async Task<string> GetDisplayRatingAsync(IVariantFeatureManagerSnapshot snapshot) {
        return await GetFeatureVariantAsync(snapshot, "display_rating");

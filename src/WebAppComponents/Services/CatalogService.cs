@@ -25,6 +25,15 @@ public class CatalogService(HttpClient httpClient)
         return await response.Content.ReadAsStringAsync();      
     }
 
+    public async Task<string?> MaxTokensAsync()
+    {
+        var uri = $"{remoteServiceBaseUrl}ff/max_tokens";
+        var response = await httpClient.GetAsync(uri);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadAsStringAsync();        
+    }
+
    public async Task<string?> DisplayRatingAsync()
     {
         var uri = $"{remoteServiceBaseUrl}ff/display_rating";
