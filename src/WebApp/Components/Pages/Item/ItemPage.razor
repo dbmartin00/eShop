@@ -100,6 +100,7 @@ else if (notFound)
 
         if (item is not null)
         {
+            await CatalogService.TrackEventAsync("add.item.to.cart", "item.count", 1L);
             await BasketState.AddAsync(item);
             await UpdateNumInCartAsync();
         }
