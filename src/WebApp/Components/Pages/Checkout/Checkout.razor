@@ -162,6 +162,7 @@
 
     private async Task HandleValidSubmitAsync()
     {
+        await CatalogService.TrackEventAsync("checkout.submitted", "submitted", 1L);
         Info.CardTypeId = 1;
         await Basket.CheckoutAsync(Info);
         Nav.NavigateTo("user/orders");
